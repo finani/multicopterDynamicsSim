@@ -343,7 +343,7 @@ Eigen::Vector3d MulticopterDynamicsSim::getVehicleAngularVelocity(void){
  */
 Eigen::Vector3d MulticopterDynamicsSim::getVehicleSpecificForce(void){
     Eigen::Vector3d specificForce = (getThrust(motorSpeed_) + 
-                                     attitude_.inverse()*(getDragForce(velocity_) + stochForce_))
+                                     attitude_.inverse().toRotationMatrix().transpose()*(getDragForce(velocity_) + stochForce_))
                                      / vehicleMass_;
     
     return specificForce;
@@ -648,7 +648,7 @@ void MulticopterDynamicsSim::getMotorSpeedDerivative(std::vector<double> & motor
 Eigen::Vector3d MulticopterDynamicsSim::getVelocityDerivative(const Eigen::Quaterniond & attitude, const Eigen::Vector3d & stochForce,
                                         const Eigen::Vector3d & velocity, const std::vector<double> & motorSpeed){
 
-    return (gravity_ + (attitude*getThrust(motorSpeed) + getDragForce(velocity) + stochForce)/vehicleMass_);
+    return (gravity_ + (attitude.toRotationMatrix().transpose()*getThrust(motorSpeed) + getDragForce(velocity) + stochForce)/vehicleMass_);
 }
 
 /**
